@@ -1,29 +1,81 @@
 const express = require("express");
 const exphbs = require("express-handlebars");
 const bodyParser = require("body-parser");
-const path = require("path");
+const swaggerJsdocs = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
-const db = require("./config/database");
+const path = require("path");
+const db = require("./config/database").default;
+//const { authenticate } = require('./config/database').default;
+const exp = require("constants");
+const app = express();
+
+const swaggerOption = {
+  swaggerDefinition: {
+    info: {
+      title: "Ishtehar.pk",
+      description: "Public Notices platform Site APIs",
+    },
+  },
+
+  //API Route
+  apis: ["index.js"],
+};
+const swaggerDocs = swaggerJsdocs(swaggerOption);
 
 // Test DB
 const init = async () => {
+  try {
+    //const connectionResp = await authenticate();
+    const app = express();
 
-try{
-  const connectionResp = await db.authenticate();
+    app.get("/", (req, res) => res.send("INDEX"));
 
-  const app = express();
+    //User Routes
 
-  app.get("/", (req, res) => res.send("INDEX"));
+    /**
+ * @swagger
+ * /User:
+ *  get:
+ *    description: show home page
+ *    responses:
+ *       200:
+ *          description: success
 
-  //User Routes
+ */
+    app.use("/User", require("./routes/UserRoute"));
 
-  app.use("/user", require("./routes/user"));
+    /**
+ * @swagger
+ * /Role:
+ *  get:
+ *    description: show role of the users
+ *    responses:
+ *       200:
+ *          description: success
 
-  const PORT = process.env.PORT || 5000;
+ */
+    app.use("/Role", require("./routes/RoleRoute"));
 
-  app.listen(PORT, console.log(`Server started on PORT ${PORT}`));
-}catch (err) {
+    /**
+ * @swagger
+ * /About:
+ *  get:
+ *    description: show about page
+ *    responses:
+ *       200:
+ *          description: success
 
-}
-}
+ */
+    app.use("/About", require("./routes/AboutRoute"));
+
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, console.log(`Server started on PORT ${PORT}`));
+  } catch (err) {
+    console.log(err);
+  }
+};
 init();

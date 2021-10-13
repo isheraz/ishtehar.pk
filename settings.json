@@ -1,0 +1,14 @@
+{
+    "[json]": {
+    
+        "editor.quickSuggestions": {
+            "strings": true,
+            "editor.formatOnSave": true,
+             "editor.defaultFormatter": "esbenp.prettier-vscode",
+             "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+  }
+        },
+        "editor.suggest.insertMode": "replace"
+    }
+}
