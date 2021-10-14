@@ -3,8 +3,9 @@ const exphbs = require("express-handlebars");
 const bodyParser = require("body-parser");
 const swaggerJsdocs = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-
+const jwt = require("jsonwebtoken");
 const path = require("path");
+const authRoutes = require("./controllers/authcontroller");
 const db = require("./config/database").default;
 //const { authenticate } = require('./config/database').default;
 const exp = require("constants");
@@ -28,7 +29,7 @@ const init = async () => {
   try {
     //const connectionResp = await authenticate();
     const app = express();
-
+    app.use(authRoutes);
     app.get("/", (req, res) => res.send("INDEX"));
 
     //User Routes
@@ -68,6 +69,32 @@ const init = async () => {
 
  */
     app.use("/About", require("./routes/AboutRoute"));
+
+    /**
+ * @swagger
+ * /NewsPaper:
+ *  get:
+ *    description: show Newspapers that registered on Ishtehar.pk
+ *    responses:
+ *       200:
+ *          description: success
+
+ */
+
+    app.use("/NewsPaper", require("./routes/NewsPaperRoute"));
+
+    /**
+ * @swagger
+ * /Notices:
+ *  get:
+ *    description: show Newspapers that registered on Ishtehar.pk
+ *    responses:
+ *       200:
+ *          description: success
+
+ */
+
+    app.use("/Notices", require("./routes/NoticesRoute"));
 
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
