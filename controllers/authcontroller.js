@@ -1,7 +1,7 @@
-const User = require("./models/user.js");
-const jwt = require("jsonwebtoken");
-const cookieparper = require("cookie-parser");
-const { application } = require("express");
+import User, { create, _id } from "./models/user.js";
+import { sign } from "jsonwebtoken";
+import cookieparper from "cookie-parser";
+import { application } from "express";
 
 //middleware
 app.use(cookieparper);
@@ -41,16 +41,16 @@ const handleErrors = (err) => {
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-  return jwt.sign({ id }, "ishtehar net secret", {
+  return sign({ id }, "ishtehar net secret", {
     expiresIn: maxAge,
   });
 };
 
-module.exports.signup_get = (req, res) => {
+export function signup_get(req, res) {
   res.render("signup");
-};
+}
 
-module.exports.signup_post = async (req, res) => {
+export async function signup_post(req, res) {
   const {
     UserEmail,
     UserPassword,
@@ -65,7 +65,7 @@ module.exports.signup_post = async (req, res) => {
   } = req.body;
 
   try {
-    const user = await User.create({
+    const user = await create({
       UserEmail,
       UserPassword,
       UserFirstName,
@@ -82,7 +82,7 @@ module.exports.signup_post = async (req, res) => {
     res.status(201).json(User);
   } catch (err) {
     const errors = handleErrors(err);
-    res.status(400).json({ user: User._id });
+    res.status(400).json({ user: _id });
   }
 
   module.exports.login_get = (req, res) => {
@@ -93,4 +93,4 @@ module.exports.signup_post = async (req, res) => {
     const { UserEmail, UserPassword } = req.body;
     res.send("User login");
   };
-};
+}
