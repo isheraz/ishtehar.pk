@@ -2,10 +2,38 @@ const db = require("../models");
 const { Validator } = require("node-input-validator");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
-const { secretkey } = require("../config/app");
+const { secretkey, refreshkey } = require("../config/app");
+const cookieParser = require("cookie-parser");
+const express = require("express");
+const app = express();
+let refreshTokens = [];
 
+app.use(cookieParser());
 module.exports.signup_get = (req, res) => {
   res.send("Sign Up render here");
+};
+
+module.exports.renew_access_token = (req, res) => {
+  const refreshToken = req.body.token;
+  const { email, password } = req.body;
+  // if (!refreshToken || refreshTokens.includes(refreshToken)) {
+  //   return res.send.status(403).json({ message: "User not Authenticated" });
+  // }
+  const user = { email, password };
+  console.log(
+    "Refresh Token::::::::::::::",
+    refreshToken,
+    "User ::::::::::",
+    user
+  );
+
+  try {
+    const vaerified = jwt.verify(refreshToken, refreshkey);
+    const newaccessToken = jwt.sign(user, secretkey, { expiresIn: "20s" });
+    return res.status(201).json({ newaccessToken });
+  } catch (err) {
+    return res.status(401).send("Invalid Token");
+  }
 };
 
 module.exports.login_post = async (req, res) => {
@@ -32,12 +60,26 @@ module.exports.login_post = async (req, res) => {
       //res.status(201).json(user);
       if (existingUser[0].dataValues.roleID === 1) {
         console.log("Super Admin");
-        jwt.sign(user, secretkey, { expiresIn: "24h" }, (err, token) => {
+
+        // Create Access Token
+        jwt.sign(user, secretkey, { expiresIn: "20s" }, (err, token) => {
+          // Set Access Token in Cookies
+          console.log(req.cookie);
+          res.cookie("accessToken", token, {
+            maxAge: 30000,
+            httpOnly: true,
+          });
+          let refreshToken = jwt.sign(user, refreshkey, { expiresIn: "24h" });
+          refreshTokens.push(refreshToken);
+
           res.json({
             user,
             token,
+            refreshToken,
           });
         });
+
+        // Send User Back
       } else if (existingUser[0].dataValues.roleID === 2) {
         console.log("Admin");
         jwt.sign(user, secretkey, { expiresIn: "24h" }, (err, token) => {
