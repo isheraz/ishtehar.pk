@@ -97,3 +97,14 @@ module.exports.updateUser_post = async (req, res) => {
     return res.status(200).send("User Found");
   }
 };
+
+module.exports.userList_get = async (req, res) => {
+  try {
+    const users = await db.User.findAll();
+    console.log(users);
+    res.status(201).json(users);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Error to find Users");
+  }
+};

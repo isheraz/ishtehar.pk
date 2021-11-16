@@ -16,3 +16,14 @@ module.exports.createNew = async (req, res) => {
 
   console.log("Log in here");
 };
+
+module.exports.roleList_get = async (req, res) => {
+  try {
+    const role = await db.Role.findAll();
+    console.log(role);
+    res.status(201).json(role);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Error to find Role");
+  }
+};

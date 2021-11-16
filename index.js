@@ -1,9 +1,9 @@
 const express = require("express");
 const cron = require("node-cron");
 const mailer = require("nodemailer");
-const expect = require("expect");
-
+const fetch = require("node-fetch");
 const { port, secretkey } = require("./config/app");
+var cors = require("cors");
 // const path = require("path");
 
 const indexRoutes = require("./routes/index.routes");
@@ -14,9 +14,9 @@ const app = express();
 //app.use(express.static(publicDirectory));
 
 // Email send with Nodemailer
-cron.schedule("*/30 * * * * *", () => {
-  console.log("Task is running every minute " + new Date());
-});
+// cron.schedule("*/30 * * * * *", () => {
+//   console.log("Task is running every minute " + new Date());
+// });
 // Creating a transporter
 const transporter = mailer.createTransport({
   host: "smtp.ethereal.email",
@@ -55,6 +55,6 @@ app.get("/", (req, res) => {
 console.log("Hello");
 
 // From Index.Routes
-app.use("/", indexRoutes);
+app.use("/", cors(), indexRoutes);
 
 app.listen(port);
