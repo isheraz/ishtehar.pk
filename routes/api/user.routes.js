@@ -11,7 +11,8 @@ const router = Router();
 router.post("/add-notice", verifyToken, userController.add_notice_post);
 router.post("/add-categories", verifyToken, userController.add_categories_post);
 router.post("/add-newspaper", verifyToken, userController.add_newspaper_post);
-router.post("/update-profile", verifyToken, userController.updateUser_post);
+router.post("/update-profile", userController.updateUser_post);
 router.get("/user-list", userController.userList_get);
+router.delete("/delete-user", userController.deleteUser);
 
 module.exports = router;

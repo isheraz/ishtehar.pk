@@ -59,7 +59,34 @@ module.exports.updateNotice = async (req, res) => {
   res.send("Successfully Updated");
 };
 
+module.exports.deleteUser = async (req, res) => {
+  try {
+    console.log(req.body);
+    const users = await db.User.destroy({
+      where: { id: req.body.id },
+    });
+    console.log("User Deleted Successfully");
+    res.status(201).json("User Deleted Successfully");
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Error to Delete Users");
+  }
+};
+
 module.exports.updateUser_post = async (req, res) => {
+  const v = new Validator(req.body, {
+    email: "required|email|uniqueUserEmail",
+    password: "required|minLength:6",
+    firstName: "required|string",
+    phone: "phoneNumber|minLength:11|maxLength:11",
+    CNIC: "required|integer|minLength:13|maxLength:13",
+  });
+
+  v.check().then((matched) => {
+    if (!matched) {
+      res.status(422).send(v.errors);
+    }
+  });
   const newRoleID = 2;
   const { city, country, email, firstName, lastName } = req.body;
 
@@ -94,7 +121,7 @@ module.exports.updateUser_post = async (req, res) => {
       })
       .catch((err) => console.log("Error", err));
 
-    return res.status(200).send("User Found");
+    return res.status(200).send("User Updated Successfully");
   }
 };
 

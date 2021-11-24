@@ -119,7 +119,7 @@ module.exports.signup_post = async (req, res) => {
     }
   });
 
-  const newRoleID = 3;
+  //const newRoleID = 3;
   const {
     address,
     CNIC,
@@ -130,10 +130,10 @@ module.exports.signup_post = async (req, res) => {
     lastName,
     password,
     phone,
+    roleID,
   } = req.body;
 
   const newUser = {
-    roleID: newRoleID,
     address: address,
     CNIC: CNIC,
     city: city,
@@ -143,6 +143,7 @@ module.exports.signup_post = async (req, res) => {
     lastName: lastName,
     password: password,
     phone: phone,
+    roleID: roleID,
   };
 
   const oldUser = await db.User.findOne({
